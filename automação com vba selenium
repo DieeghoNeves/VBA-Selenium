@@ -1,0 +1,107 @@
+'----CRIADO POR DIEEGHO SANTOS NEVES WHATS 067 99635-4440----'
+Sub detran()
+
+
+'    '--------RESTRIÇÃO DO COMPUTADOR----------------'
+'    Dim CompName As String
+'    CompName = Environ$("ComputerName")
+'    If CompName <> "DESKTOP-HE3OG45" Then        '?<---Aqui você irá colocar o nome da máquina autorizada
+'        MsgBox "VOCÊ NÃO É O DIEEGHO!", vbCritical, "           DIEEGHO SANTOS NEVES" '<-----Mensagem de erro exibida se o nome não bater
+'        ActiveWorkbook.Close SaveChanges:=False
+'    End If
+'
+'    '-------FIM DOS COMANDOS DE RESTRIÇÕES-------'
+'
+'    '----DATA PARA USO DESTA MACRO----'
+'    DataUso = "31/11/2019"                       '-------------AQUI VOCE COLOCA A DATA LIMITE PARA PESSOA USAR ESTA MACRO
+'    Data = Now
+'    NovaData = Format(Data, "Short Date")
+'
+'    If NovaData > DataUso Then
+'
+'        MsgBox "VOCÊ NÃO TEM MAIS PERMISSÃO PARA USAR ESTA MACRO CONTATE O DIEEGHO, WHATS 67 99635-4440!", vbCritical, "     DIEEGHO SANTOS NEVES"
+'        Exit Sub
+'    End If
+    '----FIM DA EXPRESSAO USO----'
+    
+
+    Dim MaxLine As Integer
+    Dim driver As New ChromeDriver
+    Dim desc As String
+    Dim varPlaca As Variant
+    Dim varRenavan As Variant
+    Dim vLin As Variant
+    
+voltar:
+    vLin = InputBox("POR QUAL LINHA DESEJA COMEÇAR?", "              DIEEGHO SANTOS NEVES")
+    If vLin < 7 Then
+        GoTo voltar
+    End If
+
+
+Range("E1048576").End(xlUp).Offset(1, 0).Select
+ActiveCell.Offset(0, -2).Select
+varPlacah = Cells(vLin, 3)
+driver.Wait 200
+varPlaca = Trim(varPlacah)
+ActiveCell.Offset(0, 1).Select
+driver.Wait 200
+varRenavanh = Cells(vLin, 4)
+driver.Wait 500
+varRenavan = Trim(varRenavanh)
+varPlaca = Replace(varPlaca, "-", "")
+
+Do While varPlaca <> ""
+    driver.Get "http://www2.detran.ms.gov.br/detranet/nsite/veiculo/veiculos/cVeic.asp"
+    driver.Window.Maximize
+    driver.Wait 200
+    driver.FindElementByXPath("/html/body/table[3]/tbody/tr/td/form/table/tbody/tr/td/table/tbody/tr[1]/td[2]/input").Clear.SendKeys varPlaca
+    driver.FindElementByXPath("/html/body/table[3]/tbody/tr/td/form/table/tbody/tr/td/table/tbody/tr[2]/td[2]/input").Clear.SendKeys varRenavan
+    driver.FindElementByXPath("/html/body/table[3]/tbody/tr/td/form/table/tbody/tr/td/table/tbody/tr[3]/td/input[1]").Click
+    On Error Resume Next
+    teste = driver.FindElementByXPath("/html/body/table/tbody/tr[6]/td").Text
+        If teste <> "" Then
+        erro = teste
+            Cells(vLin, 5) = erro
+            GoTo proximo
+        End If
+    On Error GoTo 0
+      DoEvents
+            If varPlaca <> "" Then
+        contador = contador + 1
+        End If
+        
+    LIC = driver.FindElementByXPath("/html/body/table[1]/tbody/tr[3]/td/table/tbody/tr[4]/td[4]").Text
+    driver.Wait 500
+    Cells(vLin, 5) = LIC
+proximo:
+    driver.Wait 500
+    varPlaca = ""
+    varRenavan = ""
+    teste = ""
+    vLin = vLin + 1
+    driver.Wait 500
+    varPlacah = Cells(vLin, 3)
+    driver.Wait 200
+    varRenavanh = Cells(vLin, 4)
+    varPlaca = Trim(varPlacah)
+    varPlaca = Replace(varPlaca, "-", "")
+    driver.Wait 200
+    varRenavan = Trim(varRenavanh)
+     ThisWorkbook.Saved = True
+    DoEvents
+Loop
+
+        MsgBox "DADOS COLETADOS COM SUCESSO!", vbInformation, "TRASPORTE-RMS"
+    driver.Quit
+End Sub
+
+
+Sub LimparTudo()
+
+    Range("A7:E7").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    ActiveWindow.SmallScroll Down:=-21
+    Selection.ClearContents
+    Range("A6").Select
+End Sub
